@@ -682,7 +682,7 @@ MODULE wwm_hotfile_mod
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 8, iret)
         iret=nf90_get_var(ncid,ac_id,AC2, start=(/1,1,1,IHOTPOS_IN/), count=(/MSC,MDC,MNP,1/))
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 9, iret)
-        iret=nf90_get_var(ncid,ac_id,VAR_ONED, start=(/1,1,IHOTPOS_IN/), count=(/nbOned, MNP, 1/))
+        iret=nf90_get_var(ncid,var_oned_id,VAR_ONED, start=(/1,1,IHOTPOS_IN/), count=(/nbOned, MNP, 1/))
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 10, iret)
         iret=nf90_close(ncid)
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 11, iret)
@@ -699,8 +699,10 @@ MODULE wwm_hotfile_mod
           CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 14, iret)
           iret=nf90_get_var(ncid,ac_id,AC2, start=(/1,1,1,IHOTPOS_IN/),  count = (/MSC, MDC, MNP, 1 /))
           CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 15, iret)
-          iret=nf90_close(ncid)
+          iret=nf90_get_var(ncid,var_oned_id,VAR_ONED, start=(/1,1,IHOTPOS_IN/), count=(/nbOned, MNP, 1/))
           CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 16, iret)
+          iret=nf90_close(ncid)
+          CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 17, iret)
         ELSE
           DO iProc=1,eRecons % nbNeedProc
             eRank=eRecons % ListSubset(iProc) % eRankProc
@@ -839,8 +841,8 @@ MODULE wwm_hotfile_mod
         ne_write=MNE
       ENDIF
 #else
-      np_write=MNP
-      ne_write=MNE
+      np_write=np_global
+      ne_write=ne_global
 #endif
       CALL CREATE_LOCAL_HOTNAME(HOTOUT%FNAME, FILERET, MULTIPLEOUT_HOT, HOTSTYLE_OUT)
       IF (IDXHOTOUT.eq.0) THEN
@@ -871,7 +873,7 @@ MODULE wwm_hotfile_mod
           CALL WRITE_HOTFILE_PART_2(FILERET, eTimeDay, POS, MNP, AC2, VAR_ONED)
         ENDIF
 #else
-        CALL WRITE_HOTFILE_PART_2(FILERET, eTimeDay, POS, MNP, AC2, VAR_ONED)
+        CALL WRITE_HOTFILE_PART_2(FILERET, eTimeDay, POS, np_global, AC2, VAR_ONED)
 #endif
       ENDIF
       IDXHOTOUT=IDXHOTOUT+1
