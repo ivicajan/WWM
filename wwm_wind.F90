@@ -173,7 +173,7 @@
             END IF
           ELSE IF (IWINDFORMAT == 6) THEN
             WRITE(WINDBG%FHNDL,'("+TRACE...",A)') 'SPATIAL/TEMPORAL VARIABLE WIND FIELD IS USED CF NETCDF'
-            WRITE(WINDBG%FHNDL,'("+TRACE...",A)') 'COMPUTING CF INTERPOLATION COEFS AND LOADING WIND_TIME_MJD'
+            WRITE(WINDBG%FHNDL,'("+TRACE...",A)') 'LOADING WIND_TIME_MJD DEFINED AT NODES'
             FLUSH(WINDBG%FHNDL)
             CALL INIT_DIRECT_NETCDF_CF(eVAR_WIND, MULTIPLE_IN_WIND, WIN%FNAME, "Uwind")
             ALLOCATE(tmp_wind1(MNP,2), tmp_wind2(MNP,2), stat=istat)
@@ -675,6 +675,8 @@
       nx = TheInfo % nx_dim
       ny = TheInfo % ny_dim
       MinDist=LARGE
+!      WRITE(WINDBG%FHNDL,*) 'Start finding closest coordinate'
+!      FLUSH(WINDBG%FHNDL)
       DO IX=1,nx-1
         DO IY=1,ny-1
           eDist=(eX-TheInfo % LON(IX,IY))**2 + (eY-TheInfo % LAT(IX,IY))**2
@@ -686,6 +688,14 @@
         END DO
       END DO
       aShift=1
+!      WRITE(WINDBG%FHNDL,*) 'lon(eX)=', eX
+!      WRITE(WINDBG%FHNDL,*) 'lat(eY)=', eY
+!      WRITE(WINDBG%FHNDL,*) 'LON(IXs+-1,IYs)=', TheInfo % LON(IXs-1,IYs), TheInfo % LON(IXs,IYs),TheInfo % LON(IXs+1,IYs)
+!      WRITE(WINDBG%FHNDL,*) 'LAT(IXs,IYs+-1)=', TheInfo % LAT(IXs,IYs-1), TheInfo % LAT(IXs,IYs),TheInfo % LAT(IXs,IYs+1)
+!      WRITE(WINDBG%FHNDL,*) 'MinDist(km)=', SQRT(MinDist)*110
+!      FLUSH(WINDBG%FHNDL)
+
+      EXTRAPO_OUT=.TRUE.
       DO
         IXmin=max(1, IXs - aShift)
         IYmin=max(1, IYs - aShift)
@@ -743,7 +753,7 @@
         END IF
         aShift=aShift + 1
       END DO
-      IF (EXTRAPO_IN .eqv. .FALSE.) THEN
+      IF ( (EXTRAPO_IN .eqv. .FALSE.) .and. (EXTRAPO_OUT .eqv. .TRUE.) ) THEN
         WRITE(STAT % FHNDL,*) 'aShift=', aShift
         WRITE(STAT % FHNDL,*) 'eX=', eX, 'eY=', eY
         FLUSH(STAT % FHNDL)
@@ -755,9 +765,9 @@
         eCF_COEFF(2)=0
         eCF_COEFF(3)=0
         eCF_COEFF(4)=0
-        EXTRAPO_OUT=.TRUE.
-        WRITE(STAT % FHNDL,*) 'Point ', eX, '/', eY, ' outside grid'
-        WRITE(STAT % FHNDL,*) 'MinDist=', MinDist
+!        EXTRAPO_OUT=.TRUE.
+!        WRITE(STAT % FHNDL,*) 'Point ', eX, '/', eY, ' outside grid'
+!        WRITE(STAT % FHNDL,*) 'MinDist=', MinDist
       END IF
       END SUBROUTINE
 !**********************************************************************
@@ -807,6 +817,9 @@
       WRITE(WINDBG%FHNDL,*) 'max(lon)=', maxval(TheInfo % LON)
       WRITE(WINDBG%FHNDL,*) 'min(lat)=', minval(TheInfo % LAT)
       WRITE(WINDBG%FHNDL,*) 'max(lat)=', maxval(TheInfo % LAT)
+      WRITE(WINDBG%FHNDL,*) 'MNP_WIND=', MNP_WIND
+      WRITE(WINDBG%FHNDL,*) 'START BIG SLOW LOOP'
+      FLUSH(WINDBG%FHNDL)
       DO I = 1, MNP_WIND
         IF (I .eq. 1) THEN
           IXs=1
@@ -824,6 +837,8 @@
         IF (EXTRAPO_OUT .eqv. .TRUE.) THEN
           nbExtrapolation = nbExtrapolation + 1
         END IF
+	WRITE(WINDBG%FHNDL,*) 'I(', MNP_WIND,')=', I
+	FLUSH(WINDBG%FHNDL)
       END DO
       IF (LSAVE_INTERP_ARRAY) THEN
         CALL SAVE_INTERP_ARRAY(FileSave)
@@ -833,6 +848,7 @@
         WRITE(WINDBG%FHNDL,*) ' MaxMinDist=', sqrt(MaxMinDist)
       END IF
       WRITE(WINDBG%FHNDL,*) ' done interp calcs'
+      FLUSH(WINDBG%FHNDL)
       END SUBROUTINE
 !**********************************************************************
 !*                                                                    *
@@ -2140,6 +2156,11 @@
 
         ISTAT = nf90_get_var(fid, varid, CF_LAT)
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 12, ISTAT)
+
+        WRITE(WINDBG%FHNDL,*) 'MIN,MAX CF_LON=', MINVAL(CF_LON), MAXVAL(CF_LON)
+        WRITE(WINDBG%FHNDL,*) 'MIN,MAX CF_LAT=', MINVAL(CF_LAT), MAXVAL(CF_LAT)
+        FLUSH(WINDBG%FHNDL)
+
         TheInfo % nx_dim = NDX_WIND_FD
         TheInfo % ny_dim = NDY_WIND_FD
         allocate(TheInfo % LON(NDX_WIND_FD, NDY_WIND_FD), TheInfo % LAT(NDX_WIND_FD, NDY_WIND_FD), stat=istat)
@@ -2311,7 +2332,7 @@
       character(len=*), intent(in) :: eString
 !      
       INTEGER           :: fid, varid
-      INTEGER           :: dimidsB(2), dimids(2)
+      INTEGER           :: dimidsB(3), dimids(3)
       integer nbChar
       character (len=20) :: WindTimeStr
       character(len=100) :: CHRERR
@@ -2341,7 +2362,7 @@
         ISTAT = nf90_inquire_variable(fid, varid, dimids=dimidsB)
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 3, ISTAT)
 
-        ISTAT = nf90_inquire_dimension(fid, dimidsB(2), name=WindTimeStr)
+        ISTAT = nf90_inquire_dimension(fid, dimidsB(3), name=WindTimeStr)
         CALL GENERIC_NETCDF_ERROR_WWM(CallFct, 4, ISTAT)
         WRITE(WINDBG%FHNDL,*) 'variable used for time=', TRIM(WindTimeStr)
         FLUSH(WINDBG%FHNDL)
