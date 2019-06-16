@@ -82,6 +82,7 @@
      &      URSELL, UFRIC, Z0, ALPHA_CH, WINDX, WINDY, CD,              &
      &      CURRTX, CURRTY, WATLEV, WATLEVOLD, DEPDT, DEP,              &
      &      WINDMAG, TAUW, TAUWX, TAUWY, TAUHF, TAUTOT,                 &
+     &      STOKESBOTTX, STOKESBOTTY,                                   &
      &      STOKESSURFX, STOKESSURFY, STOKESBAROX, STOKESBAROY,         &
      &      RSXX, RSXY, RSYY, CFL1, CFL2, CFL3, ZETA_SETUP
 
