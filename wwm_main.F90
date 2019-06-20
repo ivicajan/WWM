@@ -48,7 +48,7 @@
 ! Christian Ferrarin (ISMAR-CNR, Venice, Italy),
 ! Andrea Fortunato (LNEC, Lissabon, Portugal),
 ! Thomas Huxhorn (BGS IT&E, Darmstadt, Germany),
-! Ivica Janekovic, (XXXX, Australia) 
+! Ivica Janekovic, (UWA, Perth, Australia) 
 ! Kai Li (XXXX, PR China), 
 ! Kevin Maarten (UNR, La Rochele, France), 
 ! Peter Janssen (ECWMF, Reading, U.K.) 
