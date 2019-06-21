@@ -1,7 +1,7 @@
 # West Australia TC test case 
 Here you can find all needed files to run this **TC Veronica WA** example.
 
-To make vizualization easy I put 2 python scripts 
+To make vizualization easy I added 2 ugly python scripts (they could be much better, but was in hurry) 
 1. to plot stations (plot_station.py) and 
 2. for spatial variables (plot_maps.py) for different variables 
     ![i.e. create figs like this animation](https://github.com/ivicajan/WWM/blob/ivica/WA_TEST_COARSE/WA_HS_movie.gif)
@@ -23,5 +23,5 @@ Don't forget to copy history.nc and station.nc in separate folder (./forward_sav
 
 4. make plots again and compare results for period when they overlap. Hotstart should make that the same.
 
-
+**Let me know how it goes**
 Ivica
