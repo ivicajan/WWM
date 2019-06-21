@@ -24,4 +24,5 @@ Don't forget to copy history.nc and station.nc in separate folder (./forward_sav
 4. make plots again and compare results for period when they overlap. Hotstart should make that the same.
 
 **Let me know how it goes**
+
 Ivica
