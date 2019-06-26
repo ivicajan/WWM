@@ -453,7 +453,7 @@ MODULE wwm_hotfile_mod
         allocate(VAR_ONEDreturn(nbOned,np_global), stat=istat)
         IF (istat/=0) CALL WWM_ABORT('wwm_hotfile, allocate error 16')
         DO iProc=2,nproc
-          call mpi_irecv(ACreturn,1,var_oned_hot_type(iProc-1),iProc-1,8124,comm,var_oned_hot_rqst(iProc-1),ierr)
+          call mpi_irecv(VAR_ONEDreturn,1,var_oned_hot_type(iProc-1),iProc-1,8124,comm,var_oned_hot_rqst(iProc-1),ierr)
         END DO
         DO IP=1,NP_RES
           IPglob=iplg(IP)

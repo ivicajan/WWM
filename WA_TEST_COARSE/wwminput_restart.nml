@@ -522,7 +522,7 @@ ASPAR_LOCAL_LEVEL = 0                ! locality level 0 - a lot of memory 10 - n
 /
 
 &HOTFILE
- LHOTF          = N 		     ! Write hotfile
+ LHOTF          = T 		     ! Write hotfile
  BEGTC          = '20190321.000000'  ! Starting time of hotfile writing
  DELTC          = 86400      	     ! time between hotfile writes
  UNITC          = 'SEC'              ! unit used above
@@ -545,7 +545,7 @@ ASPAR_LOCAL_LEVEL = 0                ! locality level 0 - a lot of memory 10 - n
                        		     ! for reading
  MULTIPLEIN     = 0    		     ! 0: read hotfile from one single file
                         	     ! 1: read hotfile from multiple files.
- FILEHOT_IN     = 'hotfile_out.nc'   ! Hot file name for input
+ FILEHOT_IN     = 'hotfile_in.nc'   ! Hot file name for input
 /
 
 &NESTING

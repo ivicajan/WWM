@@ -108,11 +108,14 @@ if __name__=='__main__':
 
     grid, var, time = get_history_var(infile, variable, start_rec, end_rec)
 <<<<<<< HEAD
+<<<<<<< HEAD
     #cmapa = make_mycolormap()
     cmapa = 'rainbow'
     if args.cb_location == 'None': cb_location = 'right'
 =======
 >>>>>>> refs/remotes/origin/ivica
+=======
+>>>>>>> b37d65bfe2ae678a4c2d4def10f4e97dd074b67b
     nrecs, npoints = np.shape(var)
     local = timezone('Australia/Perth')
     # put all into local time 

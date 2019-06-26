@@ -3,7 +3,7 @@ PROG =  wwm.exe
 #PROG = wwmadv
 PDLIB_PATH=/opt/pdlib
 METIS_PATH=/opt/parmetis
-NETCDF_INCDIR=/home/ivica/miniconda3/include
+NETCDF_INCDIR=/opt/netcdf-4.5.0_gnu/include
 FFLAGS = -DST42 -DWWM_SETUP
 
 # Put MPI = on for compiling with mpi, nothing if no MPI is wished.
@@ -97,7 +97,7 @@ FFLAGS += -DWWM_SOLVER
 #else
 #  all: $(PROG)
 #endif
-LIBS += -L/home/ivica/miniconda3/lib -lnetcdf -lnetcdff 
+LIBS += -L/opt/netcdf-4.5.0_gnu/lib -lnetcdf -lnetcdff 
 
 ifdef TIME
   FFLAGS +=  -DTIMINGS
