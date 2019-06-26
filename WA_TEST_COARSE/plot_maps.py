@@ -19,25 +19,6 @@ from pytz import timezone, utc
 import matplotlib.ticker as ticker
 import os
 
-
-def get_history(fname, start_rec, end_rec):
-    nc = Dataset(fname,'r')
-    grid = Bunch()
-    var = Bunch()
-    grid.x = nc.variables['lon'][:]
-    grid.y = nc.variables['lat'][:]
-    grid.e = nc.variables['ele'][:] - 1
-    times = nc.variables['ocean_time']
-    var.time = num2date(times[start_rec:end_rec], units=times.units, calendar='proleptic_gregorian')
-    var.hs = nc.variables['HS'][start_rec:end_rec,:]
-    var.dir = nc.variables['DM'][start_rec:end_rec,:]
-    var.wlen = nc.variables['WLM'][start_rec:end_rec,:]
-    var.t02 = nc.variables['TM02'][start_rec:end_rec,:]
-    var.t01 = nc.variables['TM01'][start_rec:end_rec,:]
-    var.dspr = nc.variables['DSPR'][start_rec:end_rec,:]
-    nc.close()
-    return grid, var
-
 def get_history_var(fname, var, start_rec, end_rec):
     nc = Dataset(fname,'r')
     grid = Bunch()
@@ -50,17 +31,8 @@ def get_history_var(fname, var, start_rec, end_rec):
     nc.close()
     return grid, var, time
 
-def make_mycolormap():
-    import matplotlib
-    LinL = np.loadtxt('/home/ivica/python/WhiteBlueGreenYellowRed.txt')
-    LinL/=255
-    my_cmap = matplotlib.colors.ListedColormap(LinL, name='my_colormap')
-    return my_cmap
-
-
 def plot_tri_var(grid, val, trec, plotbound, clevs, cmapa, cmin, cmax, stride, title, units, orient, outfile, region):
     fig = plt.figure(figsize=(9,6), dpi=144)
-    #fig.add_subplot(111)
     ax = fig.add_axes([0.1,0.1,0.8,0.8])
     m = Basemap(llcrnrlon=plotbound[0], llcrnrlat=plotbound[2], urcrnrlon=plotbound[1], 
                 urcrnrlat=plotbound[3], projection='merc', resolution='l', epsg='4326')
@@ -68,12 +40,8 @@ def plot_tri_var(grid, val, trec, plotbound, clevs, cmapa, cmin, cmax, stride, t
     m.drawcountries()
     m.drawstates()
     m.fillcontinents(color='coral', lake_color='aqua')
-    #m.bluemarble()
-    #parallels = np.arange(-40.,-5, 5.)
     parallels = np.arange(plotbound[2], plotbound[3], np.ceil((plotbound[3]-plotbound[2])/4))
     m.drawparallels(parallels,labels = [1,0,0,0], dashes = (None, None), fontsize = 10, linewidth = 0.1)
-    # draw meridians
-    #meridians = np.arange(100., 140., 5.)
     meridians = np.arange(plotbound[0], plotbound[1], np.ceil((plotbound[1]-plotbound[0])/4))
     m.drawmeridians(meridians, labels = [0,0,0,1], dashes = (None, None), fontsize = 10, linewidth = 0.1)
     
@@ -85,11 +53,6 @@ def plot_tri_var(grid, val, trec, plotbound, clevs, cmapa, cmin, cmax, stride, t
     # add title
     title_str = ('%s %s AWST' %(title, trec.strftime('%Y/%m/%d %H')))
     plt.title(title_str)
-    print(outfile)
-    # add locations
-    if region=='nrc': m.plot(116.13672, -19.5856, 'kx', latlon = True, markersize = 10)
-    if region=='prelude': m.plot(123.3175385, -13.78636876, 'kx', latlon = True, markersize = 10)
-    #plt.show()
     plt.savefig(outfile, dpi = 144, orientation = 'landscape', transpearent = True)
     plt.close()
 
@@ -131,6 +94,9 @@ if __name__=='__main__':
     if region=='shark_bay': plotbound = [111, 114.5, -27, -22]
     if region=='nrc': plotbound = [112.5, 120, -22.5, -17.5]
     if region=='prelude': plotbound = [121, 125, -17, -12]
+
+    if args.cb_location == 'None': cb_location = 'right'
+
     start_rec = 0
     end_rec = -1
     nc = Dataset(infile)
@@ -139,9 +105,14 @@ if __name__=='__main__':
     if end_date!='None': end_rec = date2index(datetime.strptime(end_date,'%Y%m%d%H'), t, select='nearest')
     nc.close()
     print(start_rec,' -> ', end_rec)
+
     grid, var, time = get_history_var(infile, variable, start_rec, end_rec)
-    cmapa = make_mycolormap()
+<<<<<<< HEAD
+    #cmapa = make_mycolormap()
+    cmapa = 'rainbow'
     if args.cb_location == 'None': cb_location = 'right'
+=======
+>>>>>>> refs/remotes/origin/ivica
     nrecs, npoints = np.shape(var)
     local = timezone('Australia/Perth')
     # put all into local time 
@@ -160,7 +131,7 @@ if __name__=='__main__':
         stride = np.ceil(np.float((vmax-vmin)/5))
         clevs = ticker.MaxNLocator(nbins=256).tick_values(vmin, vmax)
         outfile = os.path.join(out_path,'%s_%s_%s.png' %(region, variable, trec.strftime('%Y%m%d%H')))
-        plot_tri_var(grid, val, trec, plotbound, clevs, cmapa, vmin, vmax, stride, 
+        plot_tri_var(grid, val, trec, plotbound, clevs, 'rainbow', vmin, vmax, stride, 
                      title, units, cb_location, outfile, region)
     
 
